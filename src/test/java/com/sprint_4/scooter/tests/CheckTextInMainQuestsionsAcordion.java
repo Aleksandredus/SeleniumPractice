@@ -1,7 +1,7 @@
 package com.sprint_4.scooter.tests;
 
-import com.sprint_4.scooter.page.object.HomePageScooter;
-import org.junit.Assert;
+import org.hamcrest.MatcherAssert;
+import page.object.HomePageScooter;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.junit.After;
@@ -13,18 +13,21 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
+import java.util.concurrent.TimeUnit;
+import static org.hamcrest.CoreMatchers.equalTo;
+
 @RunWith(Parameterized.class)
 public class CheckTextInMainQuestsionsAcordion {
     private final String result;
     private final int accordionLocator;
-    WebDriver driver;
+    private WebDriver driver;
 
     public CheckTextInMainQuestsionsAcordion(String result, int accordionLocator) {
         this.result = result;
         this.accordionLocator = accordionLocator;
     }
 
-    @Parameterized.Parameters//
+    @Parameterized.Parameters(name = "Проверка текста в аккордеоне. Проверка страницы: {1}")
     public static Object[][] data() {
         return new Object[][]{
                 {"Сутки — 400 рублей. Оплата курьеру — наличными или картой.", 0},
@@ -49,17 +52,16 @@ public class CheckTextInMainQuestsionsAcordion {
         driver.get("https://qa-scooter.praktikum-services.ru/");
         HomePageScooter objHomePageScooter = new HomePageScooter(driver);
         objHomePageScooter.clickAcceptCookiesButton();
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
 
     @Test
     public void CheckTextInAccordeon() throws InterruptedException {
         HomePageScooter objHomePageScooter = new HomePageScooter(driver);
         objHomePageScooter.scrollToMainQuestionLabel();
-
         driver.findElement(By.xpath(String.format("%s%d']", objHomePageScooter.getAccordionLocator(), accordionLocator))).click();
-        Thread.sleep(500);
         String answerText = objHomePageScooter.getAnswerAccordionText();
-        Assert.assertEquals("Обнаружено несоответствие текста, полученного из акордеона с ожидаемым", result, answerText);
+        MatcherAssert.assertThat(result, equalTo(answerText));
     }
 
     @After

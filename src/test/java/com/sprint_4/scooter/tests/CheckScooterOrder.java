@@ -1,8 +1,8 @@
 package com.sprint_4.scooter.tests;
 
-import com.sprint_4.scooter.page.object.CustomerDataPage;
-import com.sprint_4.scooter.page.object.HomePageScooter;
-import com.sprint_4.scooter.page.object.RentPage;
+import page.object.CustomerDataPage;
+import page.object.HomePageScooter;
+import page.object.RentPage;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.containsString;
 
@@ -26,8 +28,7 @@ public class CheckScooterOrder {
     private final String phoneNumber;
     private final String dataFields;
     private final String commentField;
-
-    WebDriver driver;
+    private WebDriver driver;
 
     public CheckScooterOrder(String firstName, String secondName, String address, String metroStation, String phoneNumber, String dataFields, String commentField) {
         this.firstName = firstName;
@@ -50,13 +51,14 @@ public class CheckScooterOrder {
         driver.get("https://qa-scooter.praktikum-services.ru/");
         HomePageScooter objHomePageScooter = new HomePageScooter(driver);
         objHomePageScooter.clickAcceptCookiesButton();
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "Проверка Оформления заказа. Кейс: {6}")
     public static Object[][] getCostumersData() {
         return new Object[][]{
-                {"Александр", "Александрович", "Фаберже 7", "Чистые пруды", "89091234567", "31.12.2022", "Хорошо"},
-                {"Иван", "Ианович", "Касая аллея 1", "Чистые пруды", "89641234567", "31.12.2022", "Хорошо"},
+                {"Александр", "Александрович", "Фаберже 7", "Чистые пруды", "89091234567", "31.12.2022", "Заказ на станцию Чистые пруды"},
+                {"Иван", "Иванович", "Касая аллея 1", "Полежаевская", "89641234567", "31.12.2022", "Заказ на станцию Полежаевская"},
         };
     }
 
@@ -67,7 +69,6 @@ public class CheckScooterOrder {
         CustomerDataPage objCustomerDataPage = new CustomerDataPage(driver);
         objCustomerDataPage.fillCustomerData(firstName, secondName, address, metroStation, phoneNumber);
         objCustomerDataPage.setNextButton();
-        Thread.sleep(500);
         RentPage objRentPage = new RentPage(driver);
         objRentPage.fillRentPage(dataFields, commentField);
         objRentPage.clickOrderBook();
@@ -83,7 +84,6 @@ public class CheckScooterOrder {
         CustomerDataPage objCustomerDataPage = new CustomerDataPage(driver);
         objCustomerDataPage.fillCustomerData(firstName, secondName, address, metroStation, phoneNumber);
         objCustomerDataPage.setNextButton();
-        Thread.sleep(500);
         RentPage objRentPage = new RentPage(driver);
         objRentPage.fillRentPage(dataFields, commentField);
         objRentPage.clickOrderBook();

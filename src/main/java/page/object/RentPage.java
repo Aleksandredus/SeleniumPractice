@@ -1,4 +1,4 @@
-package com.sprint_4.scooter.page.object;
+package page.object;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
